@@ -405,14 +405,10 @@ class Wpmo_Admin {
 			'order'          => 'ASC',
 		);
 
-		$subscriptions = get_posts( $post_args );
-		echo( 'Found ' . count( $subscriptions ) . ' active annuals<br />' );
+		$subscriptions        = get_posts( $post_args );
 		$yearly_subscriptions = array();
 		foreach ( $subscriptions as $subscription_obj ) {
 			$flycart_key = get_post_meta( $subscription_obj->ID, '_flycart_wcs_handling_upfront_recurring', true );
-			if ( $subscription_obj->ID == 1157 ) {
-				wpmastery_write_log( $flycart_key );
-			}
 			if ( ! empty( $flycart_key ) && strlen( $flycart_key ) > 0 ) {
 				if ( ! array_key_exists( $subscription_obj->ID, $yearly_subscriptions ) ) {
 					$schedules = as_get_scheduled_actions(
@@ -469,7 +465,6 @@ class Wpmo_Admin {
 		wp_reset_query();
 		asort( $yearly_subscriptions );
 		$total = count( $yearly_subscriptions );
-		echo 'After sorting, having ' . $total . ' active annuals<br />';
 		return $yearly_subscriptions;
 	}
 
