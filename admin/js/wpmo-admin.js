@@ -31,9 +31,14 @@
 
 	$(function () {
 		$('#yearly-subscriptions').dataTable({
-			"processing": true,
-			"serverside": true,
-			"ajax": yearly_datatables_callback
+			"order": [[0, "desc"]],
+			"columnDefs": [{
+				"targets": 2,
+				"data": "download_link",
+				"render": function (data, type, row, meta) {
+					return '<a target="_blank" href="' + data + '">Open Subscription</a>';
+				}
+			}]
 		})
 	});
 
