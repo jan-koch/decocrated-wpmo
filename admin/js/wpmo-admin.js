@@ -1,4 +1,4 @@
-(function( $ ) {
+(function ($) {
 	'use strict';
 
 	/**
@@ -29,4 +29,12 @@
 	 * practising this, we should strive to set a better example in our own work.
 	 */
 
-})( jQuery );
+	$(function () {
+		$('#yearly-subscriptions').dataTable({
+			"processing": true,
+			"serverside": true,
+			"ajax": yearly_datatables_callback
+		})
+	});
+
+})(jQuery);

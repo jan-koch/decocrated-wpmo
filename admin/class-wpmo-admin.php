@@ -74,6 +74,13 @@ class Wpmo_Admin {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpmo-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style(
+			$this->plugin_name . '-datatables',
+			'//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css',
+			array(),
+			$this->version,
+			'all'
+		);
 
 	}
 
@@ -97,7 +104,15 @@ class Wpmo_Admin {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wpmo-admin.js', array( 'jquery' ), $this->version, false );
+		wp_localize_script( $this->plugin_name, 'yearly_datatables_callback', admin_url( 'admin-ajax.php?action=yearly_datatables' ) );
 
+		wp_enqueue_script(
+			$this->plugin_name . '-datatables',
+			'//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js',
+			array( 'jquery' ),
+			$this->version,
+			true
+		);
 	}
 
 	public function render_admin_menu() {
@@ -382,21 +397,57 @@ class Wpmo_Admin {
 	}
 
 	public function load_annual_renewal_subscriptions_data() {
+		header( 'Content-Type: application/json' );
+		$request = $_GET;
+		if ( ! isset( $request['length'] ) ) {
+			$request['length'] = 25;
+		}
+		if ( ! isset( $request['start'] ) ) {
+			$request['start'] = 0;
+		}
+
 		$post_args = array(
-			'post_type'   => 'shop_subscription',
-			'post_status' => 'wc-active',
-			'numberposts' => -1,
-			'orderby'     => 'date',
-			'order'       => 'ASC',
+			'post_type'      => 'shop_subscription',
+			'post_status'    => 'wc-active',
+			'posts_per_page' => $request['length'],
+			'offset'         => $request['start'],
+			'orderby'        => 'date',
+			'order'          => 'ASC',
 		);
 
-		$subscriptions        = get_posts( $post_args );
+		$subscriptions = get_posts( $post_args );
+		wpmastery_write_log( 'Found ' . count( $subscriptions ) . ' active annuals' );
 		$yearly_subscriptions = array();
 		foreach ( $subscriptions as $subscription_obj ) {
 			$flycart_key = get_post_meta( $subscription_obj->ID, '_flycart_wcs_handling_upfront_recurring', true );
-			if ( isset( $flycart_key ) ) {
+			if ( $subscription_obj->ID == 1157 ) {
+				wpmastery_write_log( $flycart_key );
+			}
+			if ( ! empty( $flycart_key ) && strlen( $flycart_key ) > 0 ) {
 				if ( ! array_key_exists( $subscription_obj->ID, $yearly_subscriptions ) ) {
-					$yearly_subscriptions[ $subscription_obj->ID ] = 0;
+					$schedules = as_get_scheduled_actions(
+						array(
+							'hook' => '	woocommerce_scheduled_subscription_payment',
+							'args' => array(
+								'subscription_id' => $subscription_obj->ID,
+							),
+
+						),
+						OBJECT
+					);
+					if ( $subscription_obj->ID == 1157 ) {
+						wpmastery_write_log( 'Flycart key is set' );
+						wpmastery_write_log( $schedules );
+					}
+					$scheduled_dates = array();
+					foreach ( $schedules as $schedule ) {
+						$schedule_obj = $schedule->get_schedule();
+						$next_date    = $schedule_obj->next();
+						if ( is_a( $next_date, 'ActionScheduler_DateTime' ) ) {
+							$scheduled_dates[] = date( 'Y-m-d H:i:s', $next_date->getTimestamp() );
+						}
+					}
+					$yearly_subscriptions[ $subscription_obj->ID ] = $scheduled_dates;
 				}
 			} else {
 				$subscription = wcs_get_subscription( $subscription_obj->ID );
@@ -404,62 +455,119 @@ class Wpmo_Admin {
 					$pay_upfront_flag = wc_get_order_item_meta( $key, '_flycart_wcs_pay_upfront', true );
 					if ( ! empty( $pay_upfront_flag ) || $subscription->get_total() > 200 ) {
 						if ( ! array_key_exists( $subscription_obj->ID, $yearly_subscriptions ) ) {
-							$yearly_subscriptions[ $subscription_obj->ID ] = null;
+							$schedules = as_get_scheduled_actions(
+								array(
+									'hook' => '	woocommerce_scheduled_subscription_payment',
+									'args' => array(
+										'subscription_id' => $subscription_obj->ID,
+									),
+
+								),
+								OBJECT
+							);
+							if ( $subscription_obj->ID == 1157 ) {
+								wpmastery_write_log( 'Flycart key is not set' );
+								wpmastery_write_log( $schedules );
+							}
+							$scheduled_dates = array();
+							foreach ( $schedules as $schedule ) {
+								$schedule_obj = $schedule->get_schedule();
+								$next_date    = $schedule_obj->next();
+								if ( is_a( $next_date, 'ActionScheduler_DateTime' ) ) {
+									$scheduled_dates[] = date( 'Y-m-d H:i:s', $next_date->getTimestamp() );
+								}
+							}
+							$yearly_subscriptions[ $subscription_obj->ID ] = $scheduled_dates;
 						}
 					}
 				}
 			}
 		}
-		asort( $yearly_subscriptions );
-		foreach ( $yearly_subscriptions as $yearly_id => $yearly_next_payment_date ) {
-			$schedules = as_get_scheduled_actions(
-				array(
-					'hook' => 'woocommerce_subscription_upfront_renewal',
-					'args' => array(
-						'subscription_id' => $yearly_id,
-					),
 
-				),
-				OBJECT
-			);
-			$scheduled_dates = array();
-			foreach ( $schedules as $schedule ) {
-				echo '<br >';
-				$schedule_obj = $schedule->get_schedule();
-				$next_date    = $schedule_obj->next();
-				if ( is_a( $next_date, 'ActionScheduler_DateTime' ) ) {
-					$scheduled_dates[] = date( 'Y-m-d H:i:s', $next_date->getTimestamp() );
-				}
-			}
-			$yearly_subscriptions[ $yearly_id ] = $scheduled_dates;
-		}
-		?>
-		<table class="widefat striped">
-			<thead>
-				<th>Subscription ID</th>
-				<th>Next payment date</th>
-			</thead>
-			<tfoot>
-				<th>Subscription ID</th>
-				<th>Next payment date</th>
-			</tfoot>
-			<tbody>
-		<?php
-		print_r( $yearly_subscriptions );
-		foreach ( $yearly_subscriptions as $yearly_id => $yearly_renewal_dates ) {
-			$link = get_site_url() . '/wp-admin/post.php?post=' . $yearly_id . '&action=edit';
-			echo "<tr><td><a target='_blank' href='$link'>$yearly_id</a></td><td>" . implode( ',', $yearly_renewal_dates ) . '</td></tr>';
-		}
-		?>
-			</tbody>
-		</table>
-		<?php
+		wp_reset_query();
+		asort( $yearly_subscriptions );
+		$total = count( $yearly_subscriptions );
+		wpmastery_write_log( 'Found ' . $total . ' active annuals' );
+		$json_data = array(
+			'draw'            => intval( $request['draw'] ),
+			'recordsTotal'    => intval( $total ),
+			'recordsFiltered' => intval( $total ),
+			'data'            => $yearly_subscriptions,
+		);
+		echo json_encode( $json_data );
+
+		wp_die();
 	}
 
 	public function render_yearly_subscription_page() {
 		ob_start();
-		echo '<h2>Yearly subscriptions</h2>';
-		echo $this->load_annual_renewal_subscriptions_data();
+		$subscription_obj->ID = 1157;
+		$flycart_key          = get_post_meta( $subscription_obj->ID, '_flycart_wcs_handling_upfront_recurring', true );
+
+		if ( ! empty( $flycart_key ) && strlen( $flycart_key ) > 0 ) {
+			if ( ! array_key_exists( $subscription_obj->ID, $yearly_subscriptions ) ) {
+				$schedules = as_get_scheduled_actions(
+					array(
+						'hook' => '	woocommerce_scheduled_subscription_payment',
+						'args' => array(
+							'subscription_id' => $subscription_obj->ID,
+						),
+
+					),
+					OBJECT
+				);
+				print_r( $schedules );
+				$scheduled_dates = array();
+				foreach ( $schedules as $schedule ) {
+					$schedule_obj = $schedule->get_schedule();
+					$next_date    = $schedule_obj->next();
+					if ( is_a( $next_date, 'ActionScheduler_DateTime' ) ) {
+						$scheduled_dates[] = date( 'Y-m-d H:i:s', $next_date->getTimestamp() );
+					}
+				}
+				$yearly_subscriptions[ $subscription_obj->ID ] = $scheduled_dates;
+			}
+		} else {
+			$subscription = wcs_get_subscription( $subscription_obj->ID );
+			foreach ( $subscription->get_items() as $key => $item_obj ) {
+				$pay_upfront_flag = wc_get_order_item_meta( $key, '_flycart_wcs_pay_upfront', true );
+				if ( ! empty( $pay_upfront_flag ) || $subscription->get_total() > 200 ) {
+					if ( ! array_key_exists( $subscription_obj->ID, $yearly_subscriptions ) ) {
+						$schedules = as_get_scheduled_actions(
+							array(
+								'hook' => '	woocommerce_scheduled_subscription_payment',
+								'args' => array(
+									'subscription_id' => $subscription_obj->ID,
+								),
+
+							),
+							OBJECT
+						);
+						print_r( $schedules );
+						$scheduled_dates = array();
+						foreach ( $schedules as $schedule ) {
+							$schedule_obj = $schedule->get_schedule();
+							$next_date    = $schedule_obj->next();
+							if ( is_a( $next_date, 'ActionScheduler_DateTime' ) ) {
+								$scheduled_dates[] = date( 'Y-m-d H:i:s', $next_date->getTimestamp() );
+							}
+						}
+						$yearly_subscriptions[ $subscription_obj->ID ] = $scheduled_dates;
+					}
+				}
+			}
+		}
+		?>
+		<h2>Yearly subscriptions</h2>
+		<table id="yearly-subscriptions" class="table table-striped table-hover">
+			<thead>
+				<tr>
+					<th>Subscription ID</th>
+					<th>Schedules</th>
+				</tr>
+			</thead>
+		</table>
+		<?php
 		echo ob_get_clean();
 	}
 }
