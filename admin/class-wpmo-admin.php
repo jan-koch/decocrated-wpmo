@@ -141,10 +141,13 @@ class Wpmo_Admin {
 		);
 	}
 
+	/**
+	 * Render the main admin page for the WPMO plugin.
+	 */
 	public function render_admin_page() {
 		ob_start();
-		// $this->load_quarterly_renewal_subscriptions();
-		echo ob_get_clean();
+		require_once dirname( __FILE__ ) . '/partials/wpmo-admin-display.php';
+		echo ob_get_clean(); // phpcs:ignore
 	}
 
 
@@ -470,6 +473,7 @@ class Wpmo_Admin {
 
 	public function render_yearly_subscription_page() {
 		ob_start();
+		$this->export_canceled_subscriptions();
 		$yearly_subscriptions = $this->load_annual_renewal_subscriptions_data();
 		?>
 		<h2>Yearly subscriptions</h2>
@@ -492,5 +496,48 @@ class Wpmo_Admin {
 		</table>
 		<?php
 		echo ob_get_clean();
+	}
+
+	/**
+	 * Export canceled subscriptions to CSV.
+	 *
+	 * @return void
+	 */
+	public function export_canceled_subscriptions() {
+		check_ajax_referer( 'wpmo-trigger-cancelled-subscription-export', 's', true );
+		$post_args = array(
+			'post_type'      => 'shop_subscription',
+			'post_status'    => array( 'wc-cancelled', 'wc-pending-cancel' ),
+			'posts_per_page' => -1,
+			'orderby'        => 'date',
+			'order'          => 'ASC',
+		);
+
+		$subscriptions = get_posts( $post_args );
+		wpmastery_write_log( 'Found ' . count( $subscriptions ) . ' canceled/pending cancel subscriptions' );
+		$yearly_subscriptions = array();
+		$csv_column_names     = array(
+			'order_id',
+			'first_name',
+			'last_name',
+			'email',
+			'order_status',
+		);
+		$filename             = 'wp-content/uploads/cancelled-subscriptions.csv';
+		$file = fopen( ABSPATH . $filename, 'a' ); // phpcs:ignore
+		fputcsv( $file, $csv_column_names, ';' );
+		foreach ( $subscriptions as $subscription_obj ) {
+			$order    = wc_get_order( $subscription_obj->ID );
+			$customer = $order->get_user();
+			$row_data = array(
+				$order->get_id(),
+				$customer->get( 'first_name' ),
+				$customer->get( 'last_name' ),
+				$customer->get( 'user_email' ),
+				$order->get_status(),
+			);
+			fputcsv( $file, $row_data, ';' );
+		}
+		fclose( $file );
 	}
 }
