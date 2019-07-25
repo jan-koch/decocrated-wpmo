@@ -409,16 +409,7 @@ class Wpmo_Admin {
 	 */
 	public function subscription_has_old_annual_sku( $subscription_id ) {
 		$subscription = wcs_get_subscription( $subscription_id );
-		if ( 2644 == $subscription_id ) {
-			wpmastery_write_log( 'Subscription: ' . $subscription_id );
-		}
-
 		foreach ( $subscription->get_items() as $key => $item_obj ) {
-			if ( 2644 == $subscription_id ) {
-				wpmastery_write_log( $item_obj );
-				wpmastery_write_log( $item_obj->get_product_id() );
-			}
-
 			if ( $item_obj->get_product_id() === 90 ) {
 				return true;
 			}
@@ -444,8 +435,9 @@ class Wpmo_Admin {
 		$subscriptions        = get_posts( $post_args );
 		$yearly_subscriptions = array();
 		foreach ( $subscriptions as $subscription_obj ) {
-			$flycart_key = get_post_meta( $subscription_obj->ID, '_flycart_wcs_handling_upfront_recurring', true );
-			if ( ! empty( $flycart_key ) && strlen( $flycart_key ) > 0 ) {
+			$flycart_key        = get_post_meta( $subscription_obj->ID, '_flycart_wcs_handling_upfront_recurring', true );
+			$has_old_annual_sku = $this->subscription_has_old_annual_sku( $subscription_obj->ID );
+			if ( ( ! empty( $flycart_key ) && strlen( $flycart_key ) > 0 ) || $has_old_annual_sku ) {
 				if ( ! array_key_exists( $subscription_obj->ID, $yearly_subscriptions ) ) {
 					$schedules = as_get_scheduled_actions(
 						array(
@@ -506,7 +498,6 @@ class Wpmo_Admin {
 
 	public function render_yearly_subscription_page() {
 		ob_start();
-		$this->export_canceled_subscriptions();
 		$yearly_subscriptions = $this->load_annual_renewal_subscriptions_data();
 		?>
 		<h2>Yearly subscriptions</h2>
