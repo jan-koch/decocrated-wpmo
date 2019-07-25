@@ -341,6 +341,11 @@ class Wpmo_Admin {
 		return $old_subscriptions;
 	}
 
+	/**
+	 * Retrieve all quarterly subscriptions.
+	 *
+	 * @return mixed
+	 */
 	public function load_quarterly_renewal_subscriptions() {
 		$post_args = array(
 			'post_type'   => 'shop_subscription',
@@ -358,9 +363,12 @@ class Wpmo_Admin {
 			if ( empty( $flycart_key ) || false == $flycart_key ) {
 				$subscription = wcs_get_subscription( $subscription_obj->ID );
 				foreach ( $subscription->get_items() as $key => $item_obj ) {
-					$pay_upfront_flag = wc_get_order_item_meta( $key, '_flycart_wcs_pay_upfront', true );
-					if ( ! ( isset( $pay_upfront_flag ) && 1 == $pay_upfront_flag ) || $subscription->get_total() < 200 ) {
-						if ( ! array_key_exists( $subscription_obj->ID, $quarterly_subscriptions ) ) {
+					$pay_upfront_flag   = wc_get_order_item_meta( $key, '_flycart_wcs_pay_upfront', true );
+					$has_old_annual_sku = $this->subscription_has_old_annual_sku( $subscription_obj->ID );
+					if ( ! ( isset( $pay_upfront_flag ) && 1 === intval( $pay_upfront_flag ) ) ||
+							$subscription->get_total() < 200 ) {
+						if ( ! array_key_exists( $subscription_obj->ID, $quarterly_subscriptions ) &&
+							! $has_old_annual_sku ) {
 							$scheduled_payment_date                           = get_post_meta( $subscription_obj->ID, '_schedule_next_payment', true );
 							$quarterly_subscriptions[ $subscription_obj->ID ] = strtotime( $scheduled_payment_date );
 						}
@@ -392,6 +400,31 @@ class Wpmo_Admin {
 		<?php
 	}
 
+	/**
+	 * Annual SKU is 90, which represents the way annual subscriptions
+	 * have been sold in the first iteration of decocrated.com.
+	 *
+	 * @param [integer] $subscription_id - Subscription to check.
+	 * @return boolean
+	 */
+	public function subscription_has_old_annual_sku( $subscription_id ) {
+		$subscription = wcs_get_subscription( $subscription_id );
+		if ( 2644 == $subscription_id ) {
+			wpmastery_write_log( 'Subscription: ' . $subscription_id );
+		}
+
+		foreach ( $subscription->get_items() as $key => $item_obj ) {
+			if ( 2644 == $subscription_id ) {
+				wpmastery_write_log( $item_obj );
+				wpmastery_write_log( $item_obj->get_product_id() );
+			}
+
+			if ( $item_obj->get_product_id() === 90 ) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public function render_quarterly_subscription_overview_page() {
 		ob_start();
 		echo '<h2>Overview on Quarterly Subscriptions</h2>';
