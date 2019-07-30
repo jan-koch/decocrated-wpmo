@@ -139,6 +139,13 @@ class Wpmo_Admin {
 			'wpmo_quarterly',
 			array( $this, 'render_quarterly_subscription_overview_page' )
 		);
+		add_options_page(
+			'Excluded Coupons',
+			'Excluded Coupons',
+			'manage_woocommerce',
+			'excluded_coupons',
+			array( $this, 'render_excluded_coupons_page' )
+		);
 	}
 
 	/**
@@ -147,6 +154,15 @@ class Wpmo_Admin {
 	public function render_admin_page() {
 		ob_start();
 		require_once dirname( __FILE__ ) . '/partials/wpmo-admin-display.php';
+		echo ob_get_clean(); // phpcs:ignore
+	}
+
+	/**
+	 * Render the options page for managing coupons.
+	 */
+	public function render_excluded_coupons_page() {
+		ob_start();
+		require_once dirname( __FILE__ ) . '/partials/wpmo-coupon-options.php';
 		echo ob_get_clean(); // phpcs:ignore
 	}
 
@@ -563,5 +579,30 @@ class Wpmo_Admin {
 			fputcsv( $file, $row_data, ';' );
 		}
 		fclose( $file );
+	}
+
+	/**
+	 * Ajax callback for saving coupons that should not
+	 * be used in yearly subscription purchases.
+	 *
+	 * @return void
+	 */
+	public function save_excluded_coupons() {
+		check_ajax_referer( 'wpmo-manage-excluded-coupons', 's' );
+
+		if ( ! isset( $_POST['coupons'] ) ) {
+			wp_die();
+		}
+
+		$coupons = sanitize_text_field(
+			wp_unslash(
+				$_POST['coupons']
+			)
+		);
+
+		$coupon_array = explode( ',', $coupons );
+		$json         = json_encode( $coupon_array );
+		update_option( 'wpmo_excluded_coupons', $json );
+		wp_die();
 	}
 }
