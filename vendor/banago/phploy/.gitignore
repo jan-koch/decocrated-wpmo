@@ -1,0 +1,7 @@
+/.idea
+/.settings
+/.vscode
+/vendor
+/dev
+*~
+*.swp

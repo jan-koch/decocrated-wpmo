@@ -22,6 +22,13 @@
  */
 class Wpmo_Admin {
 
+
+
+
+
+
+
+
 	/**
 	 * The ID of this plugin.
 	 *
@@ -51,7 +58,6 @@ class Wpmo_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
-
 	}
 
 	/**
@@ -60,18 +66,17 @@ class Wpmo_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
 		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Wpmo_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Wpmo_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+		   * This function is provided for demonstration purposes only.
+		   *
+		   * An instance of this class should be passed to the run() function
+		   * defined in Wpmo_Loader as all of the hooks are defined
+		   * in that particular class.
+		   *
+		   * The Wpmo_Loader will then create the relationship
+		   * between the defined hooks and the functions defined in this
+		   * class.
+		   */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpmo-admin.css', array(), $this->version, 'all' );
 		wp_enqueue_style(
@@ -81,7 +86,6 @@ class Wpmo_Admin {
 			$this->version,
 			'all'
 		);
-
 	}
 
 	/**
@@ -90,8 +94,7 @@ class Wpmo_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
-		/**
+		 /**
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
@@ -204,16 +207,11 @@ class Wpmo_Admin {
 		$renewal_created = false;
 		$wpm_season_flag = get_post_meta( $subscription->get_id(), '_wpm_current_season', true );
 		if (
-			( strtolower( $season ) == 'fall' && count( $renewals ) == 2 ) ||
-			( strtolower( $season ) == 'winter' && count( $renewals ) == 1 ) ||
-			( strtolower( $season ) == 'spring' && count( $renewals ) == 0 )
+			( strtolower( $season ) == 'fall' && count( $renewals ) == 2 ) || ( strtolower( $season ) == 'winter' && count( $renewals ) == 1 ) || ( strtolower( $season ) == 'spring' && count( $renewals ) == 0 )
 		) {
 			$renewal_created = false;
 		} elseif (
-			( strtolower( $season ) == 'fall' && count( $renewals ) >= 3 ) ||
-			( strtolower( $season ) == 'winter' && count( $renewals ) >= 2 ) ||
-			( strtolower( $season ) == 'spring' && count( $renewals ) >= 1 ) ||
-			( strtolower( $wpm_season_flag ) == 'summer' )
+			( strtolower( $season ) == 'fall' && count( $renewals ) >= 3 ) || ( strtolower( $season ) == 'winter' && count( $renewals ) >= 2 ) || ( strtolower( $season ) == 'spring' && count( $renewals ) >= 1 ) || ( strtolower( $wpm_season_flag ) == 'summer' )
 		) {
 			$renewal_created          = true;
 			$correct_renewal_order_id = max( array_keys( $renewals ) );
@@ -250,7 +248,7 @@ class Wpmo_Admin {
 		$subscription_edit_page = get_site_url() . '/wp-admin/post.php?post=' . $subscription->get_id() . '&action=edit';
 
 		echo 'Subscription <a href="' . $subscription_edit_page . '" target="_blank">'
-				. $subscription->get_id() . '</a> was created in ' . ucfirst( $season ) . '. ';
+			. $subscription->get_id() . '</a> was created in ' . ucfirst( $season ) . '. ';
 		if ( $renewal_created ) {
 			$renewal_edit_page = get_site_url() . '/wp-admin/post.php?post=' . $correct_renewal_order_id . '&action=edit';
 			echo ' Summer renewal order exists: '
@@ -286,15 +284,15 @@ class Wpmo_Admin {
 	}
 
 	public function get_active_annual_subscriptions() {
-		$post_args     = array(
-			'post_type'   => 'shop_subscription',
-			'post_status' => 'wc-active',
-			'numberposts' => -1,
-			'meta_key'    => '_flycart_wcs_handling_upfront_recurring',
-			'meta_value'  => 1,
-			'orderby'     => 'date',
-			'order'       => 'DESC',
-		);
+		 $post_args    = array(
+			 'post_type'   => 'shop_subscription',
+			 'post_status' => 'wc-active',
+			 'numberposts' => -1,
+			 'meta_key'    => '_flycart_wcs_handling_upfront_recurring',
+			 'meta_value'  => 1,
+			 'orderby'     => 'date',
+			 'order'       => 'DESC',
+		 );
 		$subscriptions = get_posts( $post_args );
 		return $subscriptions;
 	}
@@ -324,20 +322,20 @@ class Wpmo_Admin {
 
 
 	public function get_active_old_annual_subscriptions() {
-		$post_args         = array(
-			'post_type'   => 'shop_subscription',
-			'post_status' => 'wc-active',
-			'numberposts' => -1,
-			'date_query'  => array(
-				'before' => array(
-					'year'  => 2019,
-					'month' => 5,
-					'day'   => 13,
-				),
-			),
-			'orderby'     => 'date',
-			'order'       => 'DESC',
-		);
+		 $post_args        = array(
+			 'post_type'   => 'shop_subscription',
+			 'post_status' => 'wc-active',
+			 'numberposts' => -1,
+			 'date_query'  => array(
+				 'before' => array(
+					 'year'  => 2019,
+					 'month' => 5,
+					 'day'   => 13,
+				 ),
+			 ),
+			 'orderby'     => 'date',
+			 'order'       => 'DESC',
+		 );
 		$subscriptions     = get_posts( $post_args );
 		$old_subscriptions = array();
 		foreach ( $subscriptions as $subscription_obj ) {
@@ -381,12 +379,19 @@ class Wpmo_Admin {
 				foreach ( $subscription->get_items() as $key => $item_obj ) {
 					$pay_upfront_flag   = wc_get_order_item_meta( $key, '_flycart_wcs_pay_upfront', true );
 					$has_old_annual_sku = $this->subscription_has_old_annual_sku( $subscription_obj->ID );
-					if ( ! ( isset( $pay_upfront_flag ) && 1 === intval( $pay_upfront_flag ) ) ||
-							$subscription->get_total() < 200 ) {
-						if ( ! array_key_exists( $subscription_obj->ID, $quarterly_subscriptions ) &&
-							! $has_old_annual_sku ) {
-							$scheduled_payment_date                           = get_post_meta( $subscription_obj->ID, '_schedule_next_payment', true );
-							$quarterly_subscriptions[ $subscription_obj->ID ] = strtotime( $scheduled_payment_date );
+					if (
+						! ( isset( $pay_upfront_flag ) && 1 === intval( $pay_upfront_flag ) ) ||
+						$subscription->get_total() < 200
+					) {
+						if (
+							! array_key_exists( $subscription_obj->ID, $quarterly_subscriptions ) &&
+							! $has_old_annual_sku
+						) {
+							$today                  = new DateTime();
+							$scheduled_payment_date = get_post_meta( $subscription_obj->ID, '_schedule_next_payment', true );
+							if ( strtotime( $scheduled_payment_date ) >= $today->getTimestamp() ) {
+								$quarterly_subscriptions[ $subscription_obj->ID ] = strtotime( $scheduled_payment_date );
+							}
 						}
 					}
 				}
@@ -404,25 +409,25 @@ class Wpmo_Admin {
 				<th>Next payment date</th>
 			</tfoot>
 			<tbody>
-		<?php
-		foreach ( $quarterly_subscriptions as $quarterly_id => $quarterly_renewal_date ) {
-			$scheduled_payment_date = get_post_meta( $quarterly_id, '_schedule_next_payment', true );
-			$link                   = get_site_url() . '/wp-admin/post.php?post=' . $quarterly_id . '&action=edit';
-				echo "<tr><td><a target='_blank' href='$link'>$quarterly_id</a></td><td>$scheduled_payment_date</td></tr>";
-		}
-		?>
+				<?php
+				foreach ( $quarterly_subscriptions as $quarterly_id => $quarterly_renewal_date ) {
+					$scheduled_payment_date = get_post_meta( $quarterly_id, '_schedule_next_payment', true );
+					$link                   = get_site_url() . '/wp-admin/post.php?post=' . $quarterly_id . '&action=edit';
+					echo "<tr><td><a target='_blank' href='$link'>$quarterly_id</a></td><td>$scheduled_payment_date</td></tr>";
+				}
+				?>
 			</tbody>
 		</table>
 		<?php
 	}
 
-	/**
-	 * Annual SKU is 90, which represents the way annual subscriptions
-	 * have been sold in the first iteration of decocrated.com.
-	 *
-	 * @param [integer] $subscription_id - Subscription to check.
-	 * @return boolean
-	 */
+		/**
+		 * Annual SKU is 90, which represents the way annual subscriptions
+		 * have been sold in the first iteration of decocrated.com.
+		 *
+		 * @param [integer] $subscription_id - Subscription to check.
+		 * @return boolean
+		 */
 	public function subscription_has_old_annual_sku( $subscription_id ) {
 		$subscription = wcs_get_subscription( $subscription_id );
 		foreach ( $subscription->get_items() as $key => $item_obj ) {
@@ -432,13 +437,26 @@ class Wpmo_Admin {
 		}
 		return false;
 	}
+		/**
+		 * Render the quarterly subscription overview page. This function
+		 * loads all active quarterly subscriptions and renders them
+		 * in a table presentation.
+		 *
+		 * @return void
+		 */
 	public function render_quarterly_subscription_overview_page() {
-		ob_start();
+		 ob_start();
 		echo '<h2>Overview on Quarterly Subscriptions</h2>';
-		echo $this->load_quarterly_renewal_subscriptions();
-		echo ob_get_clean();
+		echo $this->load_quarterly_renewal_subscriptions(); // phpcs:ignore
+		echo ob_get_clean(); // phpcs:ignore
 	}
 
+		/**
+		 * Load annual subscriptions that are active,
+		 * so that they can represented in the WP admin area.
+		 *
+		 * @return mixed - Annual subscription data.
+		 */
 	public function load_annual_renewal_subscriptions_data() {
 		$post_args = array(
 			'post_type'      => 'shop_subscription',
@@ -457,7 +475,6 @@ class Wpmo_Admin {
 				if ( ! array_key_exists( $subscription_obj->ID, $yearly_subscriptions ) ) {
 					$schedules = as_get_scheduled_actions(
 						array(
-							// 'hook' => '   woocommerce_scheduled_subscription_payment',
 							'args' => array(
 								'subscription_id' => $subscription_obj->ID,
 							),
@@ -483,7 +500,6 @@ class Wpmo_Admin {
 						if ( ! array_key_exists( $subscription_obj->ID, $yearly_subscriptions ) ) {
 							$schedules = as_get_scheduled_actions(
 								array(
-									// 'hook' => '   woocommerce_scheduled_subscription_payment',
 									'args' => array(
 										'subscription_id' => $subscription_obj->ID,
 									),
@@ -493,9 +509,13 @@ class Wpmo_Admin {
 							);
 							$scheduled_dates = array();
 							foreach ( $schedules as $schedule ) {
+								$today        = new DateTime();
 								$schedule_obj = $schedule->get_schedule();
 								$next_date    = $schedule_obj->next();
-								if ( is_a( $next_date, 'ActionScheduler_DateTime' ) ) {
+								if (
+									is_a( $next_date, 'ActionScheduler_DateTime' ) &&
+									$next_date->getTimestamp() >= $today->getTimestamp()
+								) {
 									$scheduled_dates[] = date( 'Y-m-d H:i:s', $next_date->getTimestamp() );
 								}
 							}
@@ -512,8 +532,14 @@ class Wpmo_Admin {
 		return $yearly_subscriptions;
 	}
 
+		/**
+		 * Renders the yearly subscription page on a specific
+		 * WP admin area.
+		 *
+		 * @return void
+		 */
 	public function render_yearly_subscription_page() {
-		ob_start();
+		 ob_start();
 		$yearly_subscriptions = $this->load_annual_renewal_subscriptions_data();
 		?>
 		<h2>Yearly subscriptions</h2>
@@ -526,16 +552,16 @@ class Wpmo_Admin {
 				</tr>
 			</thead>
 			<tbody>
-				<?php
-				foreach ( $yearly_subscriptions as $key => $value ) {
-					$link = get_site_url() . '/wp-admin/post.php?post=' . $key . '&action=edit';
-					echo '<tr><td>' . $key . '</td><td>' . implode( ', ', $value ) . '</td><td>' . $link . '</td></tr>';
-				}
-				?>
+			<?php
+			foreach ( $yearly_subscriptions as $key => $value ) {
+				$link = get_site_url() . '/wp-admin/post.php?post=' . $key . '&action=edit';
+			echo '<tr><td>' . $key . '</td><td>' . implode(', ', $value) . '</td><td>' . $link . '</td></tr>'; // phpcs:ignore
+			}
+			?>
 			</tbody>
 		</table>
 		<?php
-		echo ob_get_clean();
+		echo ob_get_clean(); // phpcs:ignore
 	}
 
 	/**
@@ -564,7 +590,7 @@ class Wpmo_Admin {
 			'order_status',
 		);
 		$filename             = 'wp-content/uploads/cancelled-subscriptions.csv';
-		$file = fopen( ABSPATH . $filename, 'a' ); // phpcs:ignore
+		$file = fopen(ABSPATH . $filename, 'a'); // phpcs:ignore
 		fputcsv( $file, $csv_column_names, ';' );
 		foreach ( $subscriptions as $subscription_obj ) {
 			$order    = wc_get_order( $subscription_obj->ID );
