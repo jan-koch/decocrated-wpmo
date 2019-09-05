@@ -1,43 +1,97 @@
 [
     {
-        "name": "phpseclib/phpseclib",
-        "version": "2.0.21",
-        "version_normalized": "2.0.21.0",
+        "name": "banago/phploy",
+        "version": "v4.9.1",
+        "version_normalized": "4.9.1.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/phpseclib/phpseclib.git",
-            "reference": "9f1287e68b3f283339a9f98f67515dd619e5bf9d"
+            "url": "https://github.com/banago/PHPloy.git",
+            "reference": "fb46117914cccc929f8acb8deffcb936c9575ade"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/9f1287e68b3f283339a9f98f67515dd619e5bf9d",
-            "reference": "9f1287e68b3f283339a9f98f67515dd619e5bf9d",
+            "url": "https://api.github.com/repos/banago/PHPloy/zipball/fb46117914cccc929f8acb8deffcb936c9575ade",
+            "reference": "fb46117914cccc929f8acb8deffcb936c9575ade",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.3.3"
+            "league/climate": ">=3.0.0",
+            "league/flysystem": ">=1.0.0",
+            "league/flysystem-sftp": ">=1.0.14",
+            "php": ">=7.0.0"
         },
         "require-dev": {
-            "phing/phing": "~2.7",
-            "phpunit/phpunit": "^4.8.35|^5.7|^6.0",
-            "sami/sami": "~2.0",
-            "squizlabs/php_codesniffer": "~2.0"
+            "phpunit/phpunit": ">=4.8.36",
+            "teqneers/php-stream-wrapper-for-git": ">=1.0.1 <2"
         },
-        "suggest": {
-            "ext-gmp": "Install the GMP (GNU Multiple Precision) extension in order to speed up arbitrary precision integer arithmetic operations.",
-            "ext-libsodium": "SSH2/SFTP can make use of some algorithms provided by the libsodium-php extension.",
-            "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
-            "ext-openssl": "Install the OpenSSL extension in order to speed up a wide variety of cryptographic operations."
-        },
-        "time": "2019-07-12 12:53:49",
+        "time": "2019-01-31T16:14:55+00:00",
+        "bin": [
+            "bin/phploy"
+        ],
         "type": "library",
         "installation-source": "dist",
         "autoload": {
-            "files": [
-                "phpseclib/bootstrap.php"
-            ],
             "psr-4": {
-                "phpseclib\\": "phpseclib/"
+                "Banago\\PHPloy\\": "src"
+            },
+            "files": [
+                "src/utils.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Baki Goxhaj",
+                "role": "Developer",
+                "email": "banago@gmail.com",
+                "homepage": "http://wplancer.com"
+            }
+        ],
+        "description": "PHPloy - Incremental Git (S)FTP deployment tool that supports submodules, multiple servers and rollbacks.",
+        "keywords": [
+            "deploy",
+            "ftp",
+            "git",
+            "sftp"
+        ]
+    },
+    {
+        "name": "league/climate",
+        "version": "3.4.1",
+        "version_normalized": "3.4.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/climate.git",
+            "reference": "d657a19837c1f79a891381fb128b755aa3386381"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/climate/zipball/d657a19837c1f79a891381fb128b755aa3386381",
+            "reference": "d657a19837c1f79a891381fb128b755aa3386381",
+            "shasum": ""
+        },
+        "require": {
+            "php": "^5.6|^7.0",
+            "psr/log": "^1.0",
+            "seld/cli-prompt": "^1.0"
+        },
+        "require-dev": {
+            "mikey179/vfsstream": "^1.4",
+            "mockery/mockery": "^1.0",
+            "phpunit/phpunit": "^5.7.16"
+        },
+        "suggest": {
+            "ext-mbstring": "If ext-mbstring is not available you MUST install symfony/polyfill-mbstring"
+        },
+        "time": "2018-04-29T16:43:54+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\CLImate\\": "src/"
             }
         },
         "notification-url": "https://packagist.org/downloads/",
@@ -46,51 +100,25 @@
         ],
         "authors": [
             {
-                "name": "Jim Wigginton",
-                "role": "Lead Developer",
-                "email": "terrafrost@php.net"
+                "name": "Craig Duncan",
+                "role": "Developer",
+                "email": "git@duncanc.co.uk",
+                "homepage": "https://github.com/duncan3dc"
             },
             {
-                "name": "Patrick Monnerat",
+                "name": "Joe Tannenbaum",
                 "role": "Developer",
-                "email": "pm@datasphere.ch"
-            },
-            {
-                "name": "Andreas Fischer",
-                "role": "Developer",
-                "email": "bantu@phpbb.com"
-            },
-            {
-                "name": "Hans-Jürgen Petrich",
-                "role": "Developer",
-                "email": "petrich@tronic-media.com"
-            },
-            {
-                "name": "Graham Campbell",
-                "role": "Developer",
-                "email": "graham@alt-three.com"
+                "email": "hey@joe.codes",
+                "homepage": "http://joe.codes/"
             }
         ],
-        "description": "PHP Secure Communications Library - Pure-PHP implementations of RSA, AES, SSH2, SFTP, X.509 etc.",
-        "homepage": "http://phpseclib.sourceforge.net",
+        "description": "PHP's best friend for the terminal. CLImate allows you to easily output colored text, special formats, and more.",
         "keywords": [
-            "BigInteger",
-            "aes",
-            "asn.1",
-            "asn1",
-            "blowfish",
-            "crypto",
-            "cryptography",
-            "encryption",
-            "rsa",
-            "security",
-            "sftp",
-            "signature",
-            "signing",
-            "ssh",
-            "twofish",
-            "x.509",
-            "x509"
+            "cli",
+            "colors",
+            "command",
+            "php",
+            "terminal"
         ]
     },
     {
@@ -135,7 +163,7 @@
             "spatie/flysystem-dropbox": "Allows you to use Dropbox storage",
             "srmklive/flysystem-dropbox-v2": "Allows you to use Dropbox storage for PHP 5 applications"
         },
-        "time": "2019-08-24 11:17:19",
+        "time": "2019-08-24T11:17:19+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -203,7 +231,7 @@
             "mockery/mockery": "0.9.*",
             "phpunit/phpunit": "^5.7.25"
         },
-        "time": "2019-06-07 20:54:19",
+        "time": "2019-06-07T20:54:19+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -224,34 +252,44 @@
         "description": "Flysystem adapter for SFTP"
     },
     {
-        "name": "seld/cli-prompt",
-        "version": "1.0.3",
-        "version_normalized": "1.0.3.0",
+        "name": "phpseclib/phpseclib",
+        "version": "2.0.21",
+        "version_normalized": "2.0.21.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/Seldaek/cli-prompt.git",
-            "reference": "a19a7376a4689d4d94cab66ab4f3c816019ba8dd"
+            "url": "https://github.com/phpseclib/phpseclib.git",
+            "reference": "9f1287e68b3f283339a9f98f67515dd619e5bf9d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Seldaek/cli-prompt/zipball/a19a7376a4689d4d94cab66ab4f3c816019ba8dd",
-            "reference": "a19a7376a4689d4d94cab66ab4f3c816019ba8dd",
+            "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/9f1287e68b3f283339a9f98f67515dd619e5bf9d",
+            "reference": "9f1287e68b3f283339a9f98f67515dd619e5bf9d",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.3"
+            "php": ">=5.3.3"
         },
-        "time": "2017-03-18 11:32:45",
+        "require-dev": {
+            "phing/phing": "~2.7",
+            "phpunit/phpunit": "^4.8.35|^5.7|^6.0",
+            "sami/sami": "~2.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "suggest": {
+            "ext-gmp": "Install the GMP (GNU Multiple Precision) extension in order to speed up arbitrary precision integer arithmetic operations.",
+            "ext-libsodium": "SSH2/SFTP can make use of some algorithms provided by the libsodium-php extension.",
+            "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
+            "ext-openssl": "Install the OpenSSL extension in order to speed up a wide variety of cryptographic operations."
+        },
+        "time": "2019-07-12T12:53:49+00:00",
         "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.x-dev"
-            }
-        },
         "installation-source": "dist",
         "autoload": {
+            "files": [
+                "phpseclib/bootstrap.php"
+            ],
             "psr-4": {
-                "Seld\\CliPrompt\\": "src/"
+                "phpseclib\\": "phpseclib/"
             }
         },
         "notification-url": "https://packagist.org/downloads/",
@@ -260,17 +298,51 @@
         ],
         "authors": [
             {
-                "name": "Jordi Boggiano",
-                "email": "j.boggiano@seld.be"
+                "name": "Jim Wigginton",
+                "role": "Lead Developer",
+                "email": "terrafrost@php.net"
+            },
+            {
+                "name": "Patrick Monnerat",
+                "role": "Developer",
+                "email": "pm@datasphere.ch"
+            },
+            {
+                "name": "Andreas Fischer",
+                "role": "Developer",
+                "email": "bantu@phpbb.com"
+            },
+            {
+                "name": "Hans-Jürgen Petrich",
+                "role": "Developer",
+                "email": "petrich@tronic-media.com"
+            },
+            {
+                "name": "Graham Campbell",
+                "role": "Developer",
+                "email": "graham@alt-three.com"
             }
         ],
-        "description": "Allows you to prompt for user input on the command line, and optionally hide the characters they type",
+        "description": "PHP Secure Communications Library - Pure-PHP implementations of RSA, AES, SSH2, SFTP, X.509 etc.",
+        "homepage": "http://phpseclib.sourceforge.net",
         "keywords": [
-            "cli",
-            "console",
-            "hidden",
-            "input",
-            "prompt"
+            "BigInteger",
+            "aes",
+            "asn.1",
+            "asn1",
+            "blowfish",
+            "crypto",
+            "cryptography",
+            "encryption",
+            "rsa",
+            "security",
+            "sftp",
+            "signature",
+            "signing",
+            "ssh",
+            "twofish",
+            "x.509",
+            "x509"
         ]
     },
     {
@@ -291,7 +363,7 @@
         "require": {
             "php": ">=5.3.0"
         },
-        "time": "2018-11-20 15:27:04",
+        "time": "2018-11-20T15:27:04+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -323,39 +395,34 @@
         ]
     },
     {
-        "name": "league/climate",
-        "version": "3.4.1",
-        "version_normalized": "3.4.1.0",
+        "name": "seld/cli-prompt",
+        "version": "1.0.3",
+        "version_normalized": "1.0.3.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/thephpleague/climate.git",
-            "reference": "d657a19837c1f79a891381fb128b755aa3386381"
+            "url": "https://github.com/Seldaek/cli-prompt.git",
+            "reference": "a19a7376a4689d4d94cab66ab4f3c816019ba8dd"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/climate/zipball/d657a19837c1f79a891381fb128b755aa3386381",
-            "reference": "d657a19837c1f79a891381fb128b755aa3386381",
+            "url": "https://api.github.com/repos/Seldaek/cli-prompt/zipball/a19a7376a4689d4d94cab66ab4f3c816019ba8dd",
+            "reference": "a19a7376a4689d4d94cab66ab4f3c816019ba8dd",
             "shasum": ""
         },
         "require": {
-            "php": "^5.6|^7.0",
-            "psr/log": "^1.0",
-            "seld/cli-prompt": "^1.0"
+            "php": ">=5.3"
         },
-        "require-dev": {
-            "mikey179/vfsstream": "^1.4",
-            "mockery/mockery": "^1.0",
-            "phpunit/phpunit": "^5.7.16"
-        },
-        "suggest": {
-            "ext-mbstring": "If ext-mbstring is not available you MUST install symfony/polyfill-mbstring"
-        },
-        "time": "2018-04-29 16:43:54",
+        "time": "2017-03-18T11:32:45+00:00",
         "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.x-dev"
+            }
+        },
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
-                "League\\CLImate\\": "src/"
+                "Seld\\CliPrompt\\": "src/"
             }
         },
         "notification-url": "https://packagist.org/downloads/",
@@ -364,84 +431,17 @@
         ],
         "authors": [
             {
-                "name": "Craig Duncan",
-                "role": "Developer",
-                "email": "git@duncanc.co.uk",
-                "homepage": "https://github.com/duncan3dc"
-            },
-            {
-                "name": "Joe Tannenbaum",
-                "role": "Developer",
-                "email": "hey@joe.codes",
-                "homepage": "http://joe.codes/"
+                "name": "Jordi Boggiano",
+                "email": "j.boggiano@seld.be"
             }
         ],
-        "description": "PHP's best friend for the terminal. CLImate allows you to easily output colored text, special formats, and more.",
+        "description": "Allows you to prompt for user input on the command line, and optionally hide the characters they type",
         "keywords": [
             "cli",
-            "colors",
-            "command",
-            "php",
-            "terminal"
-        ]
-    },
-    {
-        "name": "banago/phploy",
-        "version": "v4.9.1",
-        "version_normalized": "4.9.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/banago/PHPloy.git",
-            "reference": "fb46117914cccc929f8acb8deffcb936c9575ade"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/banago/PHPloy/zipball/fb46117914cccc929f8acb8deffcb936c9575ade",
-            "reference": "fb46117914cccc929f8acb8deffcb936c9575ade",
-            "shasum": ""
-        },
-        "require": {
-            "league/climate": ">=3.0.0",
-            "league/flysystem": ">=1.0.0",
-            "league/flysystem-sftp": ">=1.0.14",
-            "php": ">=7.0.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": ">=4.8.36",
-            "teqneers/php-stream-wrapper-for-git": ">=1.0.1 <2"
-        },
-        "time": "2019-01-31 16:14:55",
-        "bin": [
-            "bin/phploy"
-        ],
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Banago\\PHPloy\\": "src"
-            },
-            "files": [
-                "src/utils.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Baki Goxhaj",
-                "role": "Developer",
-                "email": "banago@gmail.com",
-                "homepage": "http://wplancer.com"
-            }
-        ],
-        "description": "PHPloy - Incremental Git (S)FTP deployment tool that supports submodules, multiple servers and rollbacks.",
-        "keywords": [
-            "deploy",
-            "ftp",
-            "git",
-            "sftp"
+            "console",
+            "hidden",
+            "input",
+            "prompt"
         ]
     }
 ]

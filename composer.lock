@@ -1,10 +1,9 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "hash": "bcdc33e34a4f8d52116939bb4e459e32",
     "content-hash": "3e6e41a91155fe7bd6d690a2a177694f",
     "packages": [
         {
@@ -62,7 +61,7 @@
                 "git",
                 "sftp"
             ],
-            "time": "2019-01-31 16:14:55"
+            "time": "2019-01-31T16:14:55+00:00"
         },
         {
             "name": "league/climate",
@@ -123,7 +122,7 @@
                 "php",
                 "terminal"
             ],
-            "time": "2018-04-29 16:43:54"
+            "time": "2018-04-29T16:43:54+00:00"
         },
         {
             "name": "league/flysystem",
@@ -207,7 +206,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2019-08-24 11:17:19"
+            "time": "2019-08-24T11:17:19+00:00"
         },
         {
             "name": "league/flysystem-sftp",
@@ -249,7 +248,7 @@
                 }
             ],
             "description": "Flysystem adapter for SFTP",
-            "time": "2019-06-07 20:54:19"
+            "time": "2019-06-07T20:54:19+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -341,7 +340,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2019-07-12 12:53:49"
+            "time": "2019-07-12T12:53:49+00:00"
         },
         {
             "name": "psr/log",
@@ -388,7 +387,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2018-11-20 15:27:04"
+            "time": "2018-11-20T15:27:04+00:00"
         },
         {
             "name": "seld/cli-prompt",
@@ -436,7 +435,7 @@
                 "input",
                 "prompt"
             ],
-            "time": "2017-03-18 11:32:45"
+            "time": "2017-03-18T11:32:45+00:00"
         }
     ],
     "packages-dev": [],

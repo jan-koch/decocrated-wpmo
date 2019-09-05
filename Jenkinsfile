@@ -14,12 +14,12 @@ pipeline {
                 script{
                     switch( env.BRANCH_NAME ) {
                         case "master":
-                                sh 'vendor/bin/phploy --sync'
-                                sh 'vendor/bin/phploy -s production --fresh'
+                                sh 'vendor/bin/phploy -s production --list'
+                                sh 'vendor/bin/phploy -s production'
 				            break
                         case "staging":
-                                sh 'vendor/bin/phploy --sync'
-                                sh 'vendor/bin/phploy -s staging --fresh'
+                                sh 'vendor/bin/phploy -s staging --list'
+                                sh 'vendor/bin/phploy -s staging'
 				            break
                         default:
                             // Doing nothing
