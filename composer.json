@@ -1,0 +1,5 @@
+{
+    "require": {
+        "banago/phploy": "^4.9"
+    }
+}
