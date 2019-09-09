@@ -69,13 +69,14 @@
 			$('#wpmo-running').hide();
 		});
 		$('#wpmo-trigger-missing-yearly-renewal-search').on('click', function () {
+			$('#wpmo-running').show();
 			var date = $('#wpmo-date').val();
 			var data = {
 				action: 'wpmo-trigger-missing-yearly-subscriptions',
 				date: date,
 				s: $('#wpmo_missing_yearly_nonce').val()
 			};
-			$('#wpmo-running').removeAttr('style').css('display', 'block');
+
 			$.ajax({
 				url: ajaxurl,
 				type: 'POST',
@@ -85,19 +86,22 @@
 					$('#wpmo-running').hide();
 					$('#wpmo-missing-yearly-results').html(response);
 					$('#wpmo-missing-yearly-results table').dataTable({
-						"order": [[0, "desc"]],
+						order: [[0, "desc"]],
+						dom: 'Bfrtip',
+						buttons: ['csv']
 					})
 				},
 				error: function (xmlHttpRequest, textStatus, errorThrown) {
 					if (xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0) {
 						return;  // it's not really an error
 					} else {
+						$('#wpmo-running').hide();
 						$('#wpmo-error-notice').show();
 						//console.log(xmlHttpRequest.readyState == 0 + ' - ' + xmlHttpRequest.status == 0 +  ' - ' + errorThrown);
 					}
 				}
 			}); // end ajax call
-			$('#wpmo-running').hide();
+
 		});
 	});
 
