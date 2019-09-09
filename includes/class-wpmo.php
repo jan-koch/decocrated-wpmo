@@ -29,6 +29,7 @@
  */
 class Wpmo {
 
+
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
 	 * the plugin.
@@ -78,7 +79,6 @@ class Wpmo {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-
 	}
 
 	/**
@@ -98,7 +98,6 @@ class Wpmo {
 	 * @access   private
 	 */
 	private function load_dependencies() {
-
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
@@ -123,7 +122,6 @@ class Wpmo {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-wpmo-public.php';
 
 		$this->loader = new Wpmo_Loader();
-
 	}
 
 	/**
@@ -136,11 +134,9 @@ class Wpmo {
 	 * @access   private
 	 */
 	private function set_locale() {
-
 		$plugin_i18n = new Wpmo_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
 	}
 
 	/**
@@ -151,7 +147,6 @@ class Wpmo {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-
 		$plugin_admin = new Wpmo_Admin( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
@@ -159,11 +154,9 @@ class Wpmo {
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'render_admin_menu' );
 
 		$this->loader->add_action( 'wp_ajax_wpmo-trigger-cancelled-subscription-export', $plugin_admin, 'export_canceled_subscriptions' );
-
 		$this->loader->add_action( 'wp_ajax_yearly_datatables', $plugin_admin, 'load_annual_renewal_subscriptions_data' );
-
 		$this->loader->add_action( 'wp_ajax_wpmo-manage-excluded-coupons', $plugin_admin, 'save_excluded_coupons' );
-
+		$this->loader->add_action( 'wp_ajax_wpmo-trigger-missing-yearly-subscriptions', $plugin_admin, 'render_missing_yearly_subscriptions' );
 	}
 
 	/**
@@ -174,7 +167,6 @@ class Wpmo {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-
 		$plugin_public = new Wpmo_Public( $this->get_plugin_name(), $this->get_version() );
 
 		// $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
@@ -187,7 +179,7 @@ class Wpmo {
 	 * @since    1.0.0
 	 */
 	public function run() {
-		$this->loader->run();
+		 $this->loader->run();
 	}
 
 	/**
@@ -198,7 +190,7 @@ class Wpmo {
 	 * @return    string    The name of the plugin.
 	 */
 	public function get_plugin_name() {
-		return $this->plugin_name;
+		 return $this->plugin_name;
 	}
 
 	/**
@@ -218,7 +210,6 @@ class Wpmo {
 	 * @return    string    The version number of the plugin.
 	 */
 	public function get_version() {
-		return $this->version;
+		 return $this->version;
 	}
-
 }
