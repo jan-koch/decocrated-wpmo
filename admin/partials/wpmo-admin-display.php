@@ -11,10 +11,10 @@
  * @package    Wpmo
  * @subpackage Wpmo/admin/partials
  */
+wp_nonce_field( 'wpmo-trigger-cancelled-subscription-export', 'wpmo_export_nonce' );
 $missing_annuals = array(
 	9612,
 	9601,
-	/*
 	9595,
 	9591,
 	9583,
@@ -79,6 +79,7 @@ $missing_annuals = array(
 	8759,
 	8739,
 	8735,
+	/*
 	8731,
 	8728,
 	8712,
@@ -596,7 +597,6 @@ foreach ( $missing_annuals as $order_id ) {
 		wpmastery_write_log( "Fixed subscription: $subscription_id from order $order_id" );
 	}
 }
-wp_nonce_field( 'wpmo-trigger-cancelled-subscription-export', 'wpmo_export_nonce' );
 ?>
 <p>Click the button below to trigger the export of the cancelled and pending-cancellation subscriptions.</p>
 <button id='wpmo-trigger-cancelled-subscription-export' class="button button-primary">Start export</button>
