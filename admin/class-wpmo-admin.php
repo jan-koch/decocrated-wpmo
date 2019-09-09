@@ -49,6 +49,13 @@ class Wpmo_Admin {
 
 
 
+
+
+
+
+
+
+
 	/**
 	 * The ID of this plugin.
 	 *
@@ -689,7 +696,13 @@ class Wpmo_Admin {
 		$subscriptions        = get_posts( $post_args );
 		$yearly_subscriptions = array();
 		foreach ( $subscriptions as $subscription_obj ) {
-			$subscription       = wcs_get_subscription( $subscription_obj->ID );
+			$subscription      = wcs_get_subscription( $subscription_obj->ID );
+			$subscription_date = date( 'Y-m-d', strtotime( $subscription->get_date( 'date_created' ) ) );
+			// Do not continue if subscription has been created after the given date.
+			if ( $subscription_date >= $date ) {
+				wpmastery_write_log( 'Skipping ' . $subscription_obj->ID );
+				continue;
+			}
 			$flycart_key        = get_post_meta( $subscription_obj->ID, '_flycart_wcs_handling_upfront_recurring', true );
 			$has_old_annual_sku = $this->subscription_has_old_annual_sku( $subscription_obj->ID );
 			if ( ( ! empty( $flycart_key ) && strlen( $flycart_key ) > 0 ) || $has_old_annual_sku ) {
@@ -697,16 +710,18 @@ class Wpmo_Admin {
 					// Get renewals and check if the last renewal is after the given date.
 					$renewals_list = array();
 					$renewals      = $subscription->get_related_orders( 'ids', array( 'renewal' ) );
-					foreach ( $renewals as $renewal ) {
-						$renewal_date              = get_the_date( 'Y-m-d', $renewal );
-						$renewals_list[ $renewal ] = $renewal_date;
-					}
-					arsort( $renewals_list );
-					if (
-						!in_array($subscription_obj->ID, $yearly_subscriptions) && // phpcs:ignore
-						reset( $renewals_list ) < $date // Reset gives us the top element in the array.
-					) {
-						$yearly_subscriptions[] = $subscription_obj->ID;
+					if ( count( $renewals ) > 0 ) {
+						foreach ( $renewals as $renewal ) {
+							$renewal_date              = get_the_date( 'Y-m-d', $renewal );
+							$renewals_list[ $renewal ] = $renewal_date;
+						}
+						arsort( $renewals_list );
+						if (
+							!in_array($subscription_obj->ID, $yearly_subscriptions) && // phpcs:ignore
+							reset( $renewals_list ) < $date // Reset gives us the top element in the array.
+						) {
+							$yearly_subscriptions[] = $subscription_obj->ID;
+						}
 					}
 				}
 			} else {
@@ -717,16 +732,18 @@ class Wpmo_Admin {
 							// Get renewals and check if the last renewal is after the given date.
 							$renewals_list = array();
 							$renewals      = $subscription->get_related_orders( 'ids', array( 'renewal' ) );
-							foreach ( $renewals as $renewal ) {
-								$renewal_date              = get_the_date( 'Y-m-d', $renewal );
-								$renewals_list[ $renewal ] = $renewal_date;
-							}
-							arsort( $renewals_list );
-							if (
-								!in_array($subscription_obj->ID, $yearly_subscriptions) && // phpcs:ignore
-								reset( $renewals_list ) < $date // Reset gives us the top element in the array.
-							) {
-								$yearly_subscriptions[] = $subscription_obj->ID;
+							if ( count( $renewals ) > 0 ) {
+								foreach ( $renewals as $renewal ) {
+									$renewal_date              = get_the_date( 'Y-m-d', $renewal );
+									$renewals_list[ $renewal ] = $renewal_date;
+								}
+								arsort( $renewals_list );
+								if (
+									!in_array($subscription_obj->ID, $yearly_subscriptions) && // phpcs:ignore
+									reset( $renewals_list ) < $date // Reset gives us the top element in the array.
+								) {
+									$yearly_subscriptions[] = $subscription_obj->ID;
+								}
 							}
 						}
 					}
