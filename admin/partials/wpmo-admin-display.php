@@ -584,7 +584,7 @@ $forbidden_subscription_status = array(
 	'wc-pending',
 );
 foreach ( $missing_annuals as $order_id ) {
-	$subscription_id = wpm_get_subscription_id_from_order( $order_id );
+	$subscription_id = wpm_get_subscription_from_order_id( $order_id );
 	if (
 		$subscription_id &&
 		! in_array( get_post_status( $order_id ), $forbidden_order_status, true ) &&
