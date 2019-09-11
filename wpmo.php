@@ -15,8 +15,8 @@
  * @wordpress-plugin
  * Plugin Name:       Order Management
  * Plugin URI:        https://decocrated.com
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           1.0.0
+ * Description:       This plugin renders overview pages for subscription data inside WP admin.
+ * Version:           1.1.0
  * Author:            Jan Koch | WP Mastery
  * Author URI:        https://wpmastery.xyz
  * License:           GPL-2.0+
@@ -74,9 +74,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-wpmo.php';
  * @since    1.0.0
  */
 function run_wpmo() {
-
 	$plugin = new Wpmo();
 	$plugin->run();
-
 }
 run_wpmo();

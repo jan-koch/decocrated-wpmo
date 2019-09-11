@@ -29,6 +29,35 @@ class Wpmo_Admin {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * The ID of this plugin.
 	 *
@@ -116,6 +145,55 @@ class Wpmo_Admin {
 			$this->version,
 			true
 		);
+		wp_enqueue_script(
+			$this->plugin_name . '-datatables-buttons',
+			'//cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js',
+			array( 'jquery' ),
+			$this->version,
+			true
+		);
+		wp_enqueue_script(
+			$this->plugin_name . '-datatables-btn-flash',
+			'//cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js',
+			array( 'jquery' ),
+			$this->version,
+			true
+		);
+		wp_enqueue_script(
+			$this->plugin_name . '-datatables-jszip',
+			'//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js',
+			array( 'jquery' ),
+			$this->version,
+			true
+		);
+		wp_enqueue_script(
+			$this->plugin_name . '-datatables-pdfmake',
+			'//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js',
+			array( 'jquery' ),
+			$this->version,
+			true
+		);
+		wp_enqueue_script(
+			$this->plugin_name . '-datatables-vfs',
+			'//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js',
+			array( 'jquery' ),
+			$this->version,
+			true
+		);
+		wp_enqueue_script(
+			$this->plugin_name . '-datatables-html5',
+			'//cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js',
+			array( 'jquery' ),
+			$this->version,
+			true
+		);
+		wp_enqueue_script(
+			$this->plugin_name . '-datatables-print',
+			'//cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js',
+			array( 'jquery' ),
+			$this->version,
+			true
+		);
 	}
 
 	public function render_admin_menu() {
@@ -142,6 +220,14 @@ class Wpmo_Admin {
 			'wpmo_quarterly',
 			array( $this, 'render_quarterly_subscription_overview_page' )
 		);
+		add_submenu_page(
+			'wpmo',
+			'Missing Yearly Renewals',
+			'Missing Yearly Renewals',
+			'manage_options',
+			'wpmo_missing_yearly',
+			array( $this, 'render_missing_yearly_renewals_page' )
+		);
 		add_options_page(
 			'Excluded Coupons',
 			'Excluded Coupons',
@@ -166,6 +252,15 @@ class Wpmo_Admin {
 	public function render_excluded_coupons_page() {
 		ob_start();
 		require_once dirname( __FILE__ ) . '/partials/wpmo-coupon-options.php';
+		echo ob_get_clean(); // phpcs:ignore
+	}
+
+	/**
+	 * Render the options page for missing yearly renewals.
+	 */
+	public function render_missing_yearly_renewals_page() {
+		 ob_start();
+		require_once dirname( __FILE__ ) . '/partials/wpmo-missing-yearly-renewals.php';
 		echo ob_get_clean(); // phpcs:ignore
 	}
 
@@ -528,7 +623,6 @@ class Wpmo_Admin {
 
 		wp_reset_query();
 		asort( $yearly_subscriptions );
-		$total = count( $yearly_subscriptions );
 		return $yearly_subscriptions;
 	}
 
@@ -564,11 +658,11 @@ class Wpmo_Admin {
 		echo ob_get_clean(); // phpcs:ignore
 	}
 
-	/**
-	 * Export canceled subscriptions to CSV.
-	 *
-	 * @return void
-	 */
+		/**
+		 * Export canceled subscriptions to CSV.
+		 *
+		 * @return void
+		 */
 	public function export_canceled_subscriptions() {
 		check_ajax_referer( 'wpmo-trigger-cancelled-subscription-export', 's', true );
 		$post_args = array(
@@ -607,12 +701,12 @@ class Wpmo_Admin {
 		fclose( $file );
 	}
 
-	/**
-	 * Ajax callback for saving coupons that should not
-	 * be used in yearly subscription purchases.
-	 *
-	 * @return void
-	 */
+		/**
+		 * Ajax callback for saving coupons that should not
+		 * be used in yearly subscription purchases.
+		 *
+		 * @return void
+		 */
 	public function save_excluded_coupons() {
 		check_ajax_referer( 'wpmo-manage-excluded-coupons', 's' );
 
@@ -630,5 +724,126 @@ class Wpmo_Admin {
 		$json         = json_encode( $coupon_array );
 		update_option( 'wpmo_excluded_coupons', $json );
 		wp_die();
+	}
+
+		/**
+		 * Load annual subscriptions that are active
+		 * and did not renew in the current season after a given date.
+		 *
+		 * @return mixed - Annual subscription data.
+		 */
+	public function load_missing_annual_renewals( $date = '' ) {
+		if ( strlen( $date ) === 0 ) {
+			$date = date( 'Y-m-d' );
+		}
+		$post_args = array(
+			'post_type'      => 'shop_subscription',
+			'post_status'    => 'wc-active',
+			'posts_per_page' => -1,
+			'orderby'        => 'date',
+			'order'          => 'ASC',
+		);
+
+		$subscriptions        = get_posts( $post_args );
+		$yearly_subscriptions = array();
+		foreach ( $subscriptions as $subscription_obj ) {
+			$subscription      = wcs_get_subscription( $subscription_obj->ID );
+			$subscription_date = date( 'Y-m-d', strtotime( $subscription->get_date( 'date_created' ) ) );
+			// Do not continue if subscription has been created after the given date.
+			if ( $subscription_date >= $date ) {
+				wpmastery_write_log( 'Skipping ' . $subscription_obj->ID );
+				continue;
+			}
+			$flycart_key        = get_post_meta( $subscription_obj->ID, '_flycart_wcs_handling_upfront_recurring', true );
+			$has_old_annual_sku = $this->subscription_has_old_annual_sku( $subscription_obj->ID );
+			if ( ( ! empty( $flycart_key ) && strlen( $flycart_key ) > 0 ) || $has_old_annual_sku ) {
+				if ( ! in_array( $subscription_obj->ID, $yearly_subscriptions ) ) {
+					// Get renewals and check if the last renewal is after the given date.
+					$renewals_list = array();
+					$renewals      = $subscription->get_related_orders( 'ids', array( 'renewal' ) );
+					if ( count( $renewals ) > 0 ) {
+						foreach ( $renewals as $renewal ) {
+							$renewal_date              = get_the_date( 'Y-m-d', $renewal );
+							$renewals_list[ $renewal ] = $renewal_date;
+						}
+						arsort( $renewals_list );
+						if (
+							!in_array($subscription_obj->ID, $yearly_subscriptions) && // phpcs:ignore
+							reset( $renewals_list ) < $date // Reset gives us the top element in the array.
+						) {
+							$yearly_subscriptions[] = $subscription_obj->ID;
+						}
+					}
+				}
+			} else {
+				foreach ( $subscription->get_items() as $key => $item_obj ) {
+					$pay_upfront_flag = wc_get_order_item_meta( $key, '_flycart_wcs_pay_upfront', true );
+					if ( ! empty( $pay_upfront_flag ) || $subscription->get_total() > 200 ) {
+						if ( ! in_array( $subscription_obj->ID, $yearly_subscriptions ) ) {
+							// Get renewals and check if the last renewal is after the given date.
+							$renewals_list = array();
+							$renewals      = $subscription->get_related_orders( 'ids', array( 'renewal' ) );
+							if ( count( $renewals ) > 0 ) {
+								foreach ( $renewals as $renewal ) {
+									$renewal_date              = get_the_date( 'Y-m-d', $renewal );
+									$renewals_list[ $renewal ] = $renewal_date;
+								}
+								arsort( $renewals_list );
+								if (
+									!in_array($subscription_obj->ID, $yearly_subscriptions) && // phpcs:ignore
+									reset( $renewals_list ) < $date // Reset gives us the top element in the array.
+								) {
+									$yearly_subscriptions[] = $subscription_obj->ID;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		asort( $yearly_subscriptions );
+		return $yearly_subscriptions;
+	}
+
+		/**
+		 * Ajax callback to render missing annual renewals
+		 * in the WPMO admin area.
+		 *
+		 * @return string - HTML.
+		 */
+	public function render_missing_yearly_subscriptions() {
+		 check_ajax_referer( 'wpmo-trigger-missing-yearly-subscriptions', 's', true );
+		if ( ! isset( $_POST['date'] ) ) {
+			wp_die();
+		}
+		$date = sanitize_text_field( wp_unslash( $_POST['date'] ) );
+		wpmastery_write_log( $date );
+		$subscriptions = $this->load_missing_annual_renewals( $date );
+		wpmastery_write_log( 'Found ' . count( $subscriptions ) . ' that are overdue.' );
+		ob_start();
+		?>
+		<table id='wpmo-missing-yearly-list'>
+			<thead>
+				<tr>
+					<td>Subscription ID</td>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td>Subscription ID</td>
+				</tr>
+			</tfoot>
+
+		<?php
+		foreach ( $subscriptions as $subscription ) {
+			echo '<tr><td><a target="_blank" href="' . get_site_url() . '/wp-admin/post.php?post=' . $subscription . '&action=edit">';
+			echo $subscription;
+			echo '</a></td></tr>';
+		}
+		?>
+		</table>
+
+		<?php
+		wp_die( ob_get_clean() );
 	}
 }
