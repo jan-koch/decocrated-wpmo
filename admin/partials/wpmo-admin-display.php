@@ -12,6 +12,7 @@
  * @subpackage Wpmo/admin/partials
  */
 wp_nonce_field( 'wpmo-trigger-cancelled-subscription-export', 'wpmo_export_nonce' );
+wpm_fix_renewal_date( 27947 );
 ?>
 <p>Click the button below to trigger the export of the cancelled and pending-cancellation subscriptions.</p>
 <button id='wpmo-trigger-cancelled-subscription-export' class="button button-primary">Start export</button>
