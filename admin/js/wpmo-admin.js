@@ -3,6 +3,8 @@
 	$(function () {
 		$('#yearly-subscriptions').dataTable({
 			"order": [[0, "desc"]],
+			"dom": 'Bfrtip',
+			"buttons": ['csv'],
 			"columnDefs": [{
 				"targets": 2,
 				"data": "download_link",
@@ -10,6 +12,12 @@
 					return '<a target="_blank" href="' + data + '">Open Subscription</a>';
 				}
 			}]
+		})
+
+		$('#quarterly-subscriptions').dataTable({
+			order: [[0, "desc"]],
+			dom: 'Bfrtip',
+			buttons: ['csv']
 		})
 
 		$('#wpmo-trigger-cancelled-subscription-export').on('click', function () {
@@ -46,7 +54,7 @@
 				coupons: textarea,
 				s: $('#wpmo_excluded_coupons_nonce').val()
 			};
-			console.dir(data);
+
 			$('#wpmo-running').show();
 			$.ajax({
 				url: ajaxurl,

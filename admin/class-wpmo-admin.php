@@ -494,7 +494,7 @@ class Wpmo_Admin {
 		}
 		asort( $quarterly_subscriptions );
 		?>
-		<table class="widefat striped">
+		<table id="quarterly-subscriptions" class="widefat striped">
 			<thead>
 				<th>Subscription ID</th>
 				<th>Next payment date</th>
