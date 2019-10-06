@@ -11,6 +11,10 @@
 				}
 			}]
 		})
+		$('#wpmo_referrals').dataTable({
+			"order": [[0, "desc"]],
+			"buttons": 'csv'
+		})
 
 		$('#wpmo-trigger-cancelled-subscription-export').on('click', function () {
 			var data = {

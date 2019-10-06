@@ -54,10 +54,6 @@ class Wpmo_Admin {
 
 
 
-
-
-
-
 	/**
 	 * The ID of this plugin.
 	 *
@@ -227,6 +223,14 @@ class Wpmo_Admin {
 			'manage_options',
 			'wpmo_missing_yearly',
 			array( $this, 'render_missing_yearly_renewals_page' )
+		);
+		add_submenu_page(
+			'wpmo',
+			'Referrals',
+			'Referrals',
+			'manage_options',
+			'wpmo_referrals',
+			array( $this, 'render_referrals_page' )
 		);
 		add_options_page(
 			'Excluded Coupons',
@@ -469,7 +473,7 @@ class Wpmo_Admin {
 		$quarterly_subscriptions = array();
 		foreach ( $subscriptions as $subscription_obj ) {
 			$flycart_key = get_post_meta( $subscription_obj->ID, '_flycart_wcs_handling_upfront_recurring', true );
-			if ( empty( $flycart_key ) || false == $flycart_key ) {
+			if ( empty( $flycart_key ) || false === $flycart_key ) {
 				$subscription = wcs_get_subscription( $subscription_obj->ID );
 				foreach ( $subscription->get_items() as $key => $item_obj ) {
 					$pay_upfront_flag   = wc_get_order_item_meta( $key, '_flycart_wcs_pay_upfront', true );
@@ -845,5 +849,15 @@ class Wpmo_Admin {
 
 		<?php
 		wp_die( ob_get_clean() );
+	}
+	/**
+	 * Renders a page to manage referral data.
+	 *
+	 * @return void
+	 */
+	public function render_referrals_page() {
+		ob_start();
+		require_once dirname( __FILE__ ) . '/partials/wpmo-referrals.php';
+		echo ob_get_clean(); // phpcs:ignore
 	}
 }
