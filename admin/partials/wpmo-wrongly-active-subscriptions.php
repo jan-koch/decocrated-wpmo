@@ -34,7 +34,6 @@ foreach ( $subscriptions as $subscription ) {
 		);
 	}
 }
-print_r( $wrong_subscriptions );
 ?>
 <p> This page will show you subscriptions that are active but shouldn't be, because the parent order never got paid.
 </p>

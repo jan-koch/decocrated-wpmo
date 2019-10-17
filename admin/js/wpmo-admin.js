@@ -13,6 +13,11 @@
 				}
 			}]
 		})
+		$('#wpmo_referrals').dataTable({
+			order: [[0, "desc"]],
+			dom: 'Bfrtip',
+			buttons: ['csv']
+		})
 
 		$('#quarterly-subscriptions').dataTable({
 			order: [[0, "desc"]],
