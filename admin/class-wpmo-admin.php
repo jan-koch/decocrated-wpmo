@@ -228,6 +228,14 @@ class Wpmo_Admin {
 			'wpmo_missing_yearly',
 			array( $this, 'render_missing_yearly_renewals_page' )
 		);
+		add_submenu_page(
+			'wpmo',
+			'Wrongly Active Subscriptions',
+			'Wrongly Active Subscriptions',
+			'manage_options',
+			'wpmo_wrongly_active_subscriptions',
+			array( $this, 'render_wrongly_active_subscriptions_page' )
+		);
 		add_options_page(
 			'Excluded Coupons',
 			'Excluded Coupons',
@@ -261,6 +269,15 @@ class Wpmo_Admin {
 	public function render_missing_yearly_renewals_page() {
 		 ob_start();
 		require_once dirname( __FILE__ ) . '/partials/wpmo-missing-yearly-renewals.php';
+		echo ob_get_clean(); // phpcs:ignore
+	}
+
+	/**
+	 * Render the options page for subscriptions that shouldn't be active.
+	 */
+	public function render_wrongly_active_subscriptions_page() {
+		 ob_start();
+		require_once dirname( __FILE__ ) . '/partials/wpmo-wrongly-active-subscriptions.php';
 		echo ob_get_clean(); // phpcs:ignore
 	}
 
